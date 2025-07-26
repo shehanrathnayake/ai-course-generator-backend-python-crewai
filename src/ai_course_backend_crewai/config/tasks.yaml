@@ -19,6 +19,7 @@ content_creation_task:
     - 'description': short description,
     - 'content': markdown-formatted content as a string (4–6 paragraphs),
     - 'quiz': an empty array (to be filled in later by quiz generation).
+    Please respond with **only valid JSON**, and nothing else. Make sure all strings are closed properly.
   expected_output: >
     {
       "modules": [
@@ -37,11 +38,12 @@ quiz_generation_task:
     Based on the existing course modules, populate each module’s 'quiz' field with 2 to 4 questions.
     Each question should include:
     - 'question': the quiz prompt
-    - 'choices': 2 to 4 answer choices (if applicable),
+    - 'choices': 2 to 4 answer choices,
     - 'answer': the correct answer,
     - 'explanation': a short explanation of the answer.
-    Use varied question types: MCQs, true/false, and short answers.
+    Use question types: MCQs.
     Output the updated JSON object with quizzes filled in.
+    Please respond with **only valid JSON**, and nothing else. Make sure all strings are closed properly.
   expected_output: >
     {
       "modules": [
@@ -76,31 +78,25 @@ formatting_task:
     Format the finalized course content on "{topic}" into a clean, structured JSON object.
     nsure all fields are consistently labeled and the output is suitable for use in frontend rendering,
     APIs, or storage for later export (e.g., to EPUB or PDF).
+    Ensure the response is strictly valid JSON, with all strings properly closed and no extra text outside the JSON structure.
   expected_output: >
     A single JSON object representing the full course, with nested structure for sections, lessons, and quizzes.
     Ensure the data is clean, semantically meaningful, and easy to parse.
   output_format_hint: >
     {
-      "title": "Course Title",
-      "description": "Short summary of the course",
-      "sections": [
+      "modules": [
         {
-          "title": "Section Title",
-          "lessons": [
+          "title": "Course title",
+          "description": "Course description",
+          "content": "Course content",
+          "quiz": [
             {
-              "title": "Lesson Title",
-              "content": "Detailed lesson content"
+              "question": "Question 1",
+              "choices": ["a", "b", "c", "d"],
+              "answer": "a",
+              "explanation": "Short explaination"
             }
-          ],
-          "quiz": {
-            "questions": [
-              {
-                "question": "What is ...?",
-                "options": ["A", "B", "C", "D"],
-                "answer": "A"
-              }
-            ]
-          }
+          ]
         }
       ]
     }

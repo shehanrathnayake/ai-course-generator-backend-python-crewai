@@ -6,8 +6,6 @@ from typing import Optional, Dict, Any
 from datetime import datetime
 import os
 import webbrowser
-
-from ai_course_backend_crewai.service.course_service import parse_course_output
 from .crew import AiCourseBackendCrewai
 
 from contextlib import asynccontextmanager
@@ -31,7 +29,7 @@ class CourseOutlineRequest(BaseModel):
 
 class GenerateCourseRequest(BaseModel):
     topic: str
-    complexity: Optional[str] = "medium"
+    complexity: str
     outline_edit: Optional[Dict[str, Any]] = None
     current_year: Optional[str] = str(datetime.now().year)
 
@@ -55,6 +53,7 @@ def get_course_outline(topic: str, complexity: Optional[str] = "medium", current
 @app.post("/generate-course")
 def generate_course(request: GenerateCourseRequest):
     try:
+        print(request)
         crew = AiCourseBackendCrewai().crew()
         inputs = {
             "topic": request.topic,
