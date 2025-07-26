@@ -1,9 +1,13 @@
+import json
+import re
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Optional, Dict, Any
 from datetime import datetime
 import os
 import webbrowser
+
+from ai_course_backend_crewai.service.course_service import parse_course_output
 from .crew import AiCourseBackendCrewai
 
 from contextlib import asynccontextmanager
@@ -28,7 +32,6 @@ class CourseOutlineRequest(BaseModel):
 class GenerateCourseRequest(BaseModel):
     topic: str
     complexity: Optional[str] = "medium"
-    format: str = "markdown"
     outline_edit: Optional[Dict[str, Any]] = None
     current_year: Optional[str] = str(datetime.now().year)
 
@@ -51,21 +54,25 @@ def get_course_outline(topic: str, complexity: Optional[str] = "medium", current
 
 @app.post("/generate-course")
 def generate_course(request: GenerateCourseRequest):
-    """
-    Generate a full course for a given topic, complexity, and (optionally) edited outline.
-    """
     try:
         crew = AiCourseBackendCrewai().crew()
-        # Assuming the crew.kickoff can take outline_edit as part of inputs
         inputs = {
             "topic": request.topic,
             "complexity_level": request.complexity,
-            "format": request.format,
+            "format": "json",  # enforce JSON output
             "current_year": request.current_year
         }
         if request.outline_edit:
             inputs["outline_edit"] = request.outline_edit
+
         result = crew.kickoff(inputs=inputs)
-        return {"course": result}
+    
+        clean_output = re.sub(r"^```(?:json)?\s*|\s*```$", "", result.raw.strip())
+
+        # Parse the cleaned string into a JSON object
+        parsed = json.loads(clean_output)
+
+        return parsed
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

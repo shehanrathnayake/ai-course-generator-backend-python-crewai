@@ -63,12 +63,12 @@ class AiCourseBackendCrewai():
             verbose=True
         )
 
-    @agent
-    def feedback_agent(self) -> Agent:
-        return Agent(
-            config=self.agents_config["feedback_agent"],
-            verbose=True
-        )
+    # @agent
+    # def feedback_agent(self) -> Agent:
+    #     return Agent(
+    #         config=self.agents_config["feedback_agent"],
+    #         verbose=True
+    #     )
 
     # === TASKS ===
 
@@ -103,11 +103,11 @@ class AiCourseBackendCrewai():
             output_file="final_course_output.md"
         )
 
-    @task
-    def feedback_loop_task(self) -> Task:
-        return Task(
-            config=self.tasks_config["feedback_loop_task"]
-        )
+    # @task
+    # def feedback_loop_task(self) -> Task:
+    #     return Task(
+    #         config=self.tasks_config["feedback_loop_task"]
+    #     )
 
     # === CREW FLOW ===
 

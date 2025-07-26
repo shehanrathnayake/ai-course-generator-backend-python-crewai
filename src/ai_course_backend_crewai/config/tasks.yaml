@@ -14,25 +14,52 @@ content_creation_task:
   description: >
     Based on the generated course outline for the topic "{topic}", write in-depth course content for each section.
     Include explanations, examples, and real-world context where applicable. Use educational tone suitable for {complexity_level} learners.
+    Output the result as a valid JSON object with a 'modules' array. Each module should have:
+    - 'title': module title,
+    - 'description': short description,
+    - 'content': markdown-formatted content as a string (4–6 paragraphs),
+    - 'quiz': an empty array (to be filled in later by quiz generation).
   expected_output: >
-    A full course content draft where each section from the outline has:
-    - A title
-    - 4 to 6 well-structured paragraphs explaining the topic
-    - Markdown format with headings, subheadings, and bullet points if necessary
+    {
+      "modules": [
+        {
+          "title": "Module Title",
+          "description": "Brief summary of the module",
+          "content": "## Heading\\nYour markdown content here...",
+          "quiz": []
+        }
+      ]
+    }
   agent: content_creator
 
 quiz_generation_task:
   description: >
-    For each section in the {topic} course, create 2 to 4 quiz questions that test the learner’s understanding.
-    Vary question types (MCQs, true/false, short answer) and provide clear answers and explanations.
+    Based on the existing course modules, populate each module’s 'quiz' field with 2 to 4 questions.
+    Each question should include:
+    - 'question': the quiz prompt
+    - 'choices': 2 to 4 answer choices (if applicable),
+    - 'answer': the correct answer,
+    - 'explanation': a short explanation of the answer.
+    Use varied question types: MCQs, true/false, and short answers.
+    Output the updated JSON object with quizzes filled in.
   expected_output: >
-    A list of quizzes grouped by section.
-    Each quiz item should include:
-    - Question
-    - 2–4 answer choices (if applicable)
-    - Correct answer
-    - Short explanation
-    Use markdown formatting.
+    {
+      "modules": [
+        {
+          "title": "...",
+          "description": "...",
+          "content": "...",
+          "quiz": [
+            {
+              "question": "...",
+              "choices": ["a", "b", "c"],
+              "answer": "a",
+              "explanation": "..."
+            }
+          ]
+        }
+      ]
+    }
   agent: quiz_master
 
 content_editing_task:
@@ -46,21 +73,47 @@ content_editing_task:
 
 formatting_task:
   description: >
-    Convert the finalized course content on "{topic}" into the desired format: {format}.
-    Ensure clean formatting, readable structure, and compatibility with common e-readers or document tools.
+    Format the finalized course content on "{topic}" into a clean, structured JSON object.
+    nsure all fields are consistently labeled and the output is suitable for use in frontend rendering,
+    APIs, or storage for later export (e.g., to EPUB or PDF).
   expected_output: >
-    A single output file (or string if rendering inline) representing the course in {format} format.
-    It should be clean, organized, and downloadable.
+    A single JSON object representing the full course, with nested structure for sections, lessons, and quizzes.
+    Ensure the data is clean, semantically meaningful, and easy to parse.
+  output_format_hint: >
+    {
+      "title": "Course Title",
+      "description": "Short summary of the course",
+      "sections": [
+        {
+          "title": "Section Title",
+          "lessons": [
+            {
+              "title": "Lesson Title",
+              "content": "Detailed lesson content"
+            }
+          ],
+          "quiz": {
+            "questions": [
+              {
+                "question": "What is ...?",
+                "options": ["A", "B", "C", "D"],
+                "answer": "A"
+              }
+            ]
+          }
+        }
+      ]
+    }
   agent: format_agent
 
-feedback_loop_task:
-  description: >
-    Gather feedback from the user regarding the {topic} course outline and content.
-    Identify which parts need changes or improvement and coordinate with the appropriate agents to update the material.
-  expected_output: >
-    A list of user-requested changes and a plan for revising the course content accordingly.
-    Optionally, regenerate relevant sections or quizzes based on feedback.
-  agent: feedback_agent
+# feedback_loop_task:
+#   description: >
+#     Gather feedback from the user regarding the {topic} course outline and content.
+#     Identify which parts need changes or improvement and coordinate with the appropriate agents to update the material.
+#   expected_output: >
+#     A list of user-requested changes and a plan for revising the course content accordingly.
+#     Optionally, regenerate relevant sections or quizzes based on feedback.
+#   agent: feedback_agent
 
 
 # research_task:
