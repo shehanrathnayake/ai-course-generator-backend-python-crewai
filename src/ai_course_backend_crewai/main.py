@@ -19,6 +19,8 @@ def run():
     """
     inputs = {
         'topic': 'AI LLMs',
+        'complexity_level': 'medium',
+        'format': 'markdown',
         'current_year': str(datetime.now().year)
     }
     
@@ -34,6 +36,8 @@ def train():
     """
     inputs = {
         "topic": "AI LLMs",
+        'complexity_level': 'medium',
+        'format': 'markdown',
         'current_year': str(datetime.now().year)
     }
     try:
@@ -58,6 +62,8 @@ def test():
     """
     inputs = {
         "topic": "AI LLMs",
+        'complexity_level': 'medium',
+        'format': 'markdown',
         "current_year": str(datetime.now().year)
     }
     
